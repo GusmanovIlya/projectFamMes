@@ -7,9 +7,9 @@ struct NotesHomeView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(vm.notes) { note in
-                    NoteCardView(
+                    List {
+                        ForEach(vm.notes) { note in
+                            NoteCardView(
                         title: note.title ?? "Без названия",
                         content: note.content,
                         updatedAt: note.updatedAt
