@@ -7,22 +7,26 @@ struct NotesHomeView: View {
 
     var body: some View {
         NavigationStack {
-                    List {
-                        ForEach(vm.notes) { note in
-                            NoteCardView(
+            List {
+                ForEach(vm.notes) { note in
+                    NoteCardView(
                         title: note.title ?? "Без названия",
                         content: note.content,
                         updatedAt: note.updatedAt
                     )
+                    .overlay {
+                        NavigationLink(destination: NoteView(note: note)) {
+                            EmptyView()
+                        }
+                        .opacity(0)
+                    }
                     .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                     .listRowSeparator(.hidden)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        editingNote = note
-                    }
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(role: .destructive) {
-                            Task { await vm.delete(id: note.id) }
+                            Task {
+                                await vm.delete(id: note.id)
+                            }
                         } label: {
                             Label("Удалить", systemImage: "trash")
                         }
@@ -46,6 +50,12 @@ struct NotesHomeView: View {
                         Image(systemName: "plus")
                     }
                 }
+            }
+            .sheet(isPresented: $showCreate) {
+                NotesEditView(vm: vm)
+            }
+            .sheet(item: $editingNote) { note in
+                NotesEditView(vm: vm, note: note)
             }
         }
         .task {
