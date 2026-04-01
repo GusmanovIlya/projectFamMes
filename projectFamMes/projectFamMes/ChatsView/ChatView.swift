@@ -2,39 +2,7 @@ import SwiftUI
 
 struct ChatView: View {
     let chat: Chat
-
-    @State private var draft = ""
-
-    private let currentUserId = "me"
-
-    private var messages: [Message] {
-        [
-            Message(
-                id: UUID().uuidString,
-                roomId: chat.id.uuidString,
-                senderId: chat.name,
-                text: "Привет! Ты сможешь посмотреть заметки сегодня?",
-                createdAt: .now.addingTimeInterval(-7600),
-                status: .read
-            ),
-            Message(
-                id: UUID().uuidString,
-                roomId: chat.id.uuidString,
-                senderId: currentUserId,
-                text: "Да, конечно. Уже почти закончил экран редактирования.",
-                createdAt: .now.addingTimeInterval(-7200),
-                status: .read
-            ),
-            Message(
-                id: UUID().uuidString,
-                roomId: chat.id.uuidString,
-                senderId: chat.name,
-                text: chat.lastMessage,
-                createdAt: .now.addingTimeInterval(-1800),
-                status: .delivered
-            )
-        ]
-    }
+    @State var vm: ChatViewModel
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -43,11 +11,11 @@ struct ChatView: View {
 
             ScrollView {
                 LazyVStack(spacing: 12) {
-                    ForEach(messages) { message in
+                    ForEach(vm.messages) { message in
                         MessageBubble(
                             text: message.text,
                             time: message.createdAt.formatted(date: .omitted, time: .shortened),
-                            isOutgoing: message.senderId == currentUserId
+                            isOutgoing: vm.isOutgoing(message)
                         )
                     }
                 }
@@ -69,11 +37,14 @@ struct ChatView: View {
                     .clipShape(Circle())
             }
         }
+        .task {
+            await vm.load()
+        }
     }
 
     private var composer: some View {
         HStack(alignment: .bottom, spacing: 10) {
-            TextField("Сообщение", text: $draft, axis: .vertical)
+            TextField("Сообщение", text: $vm.draft, axis: .vertical)
                 .textFieldStyle(.plain)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 12)
@@ -81,14 +52,16 @@ struct ChatView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
 
             Button {
-                draft = ""
+                Task {
+                    await vm.sendMessage()
+                }
             } label: {
                 Image(systemName: "arrow.up")
                     .font(.headline)
                     .frame(width: 44, height: 44)
             }
             .buttonStyle(.borderedProminent)
-            .disabled(draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            .disabled(vm.draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
@@ -126,11 +99,15 @@ private struct MessageBubble: View {
 
 #Preview {
     NavigationStack {
-        ChatView(chat: Chat(
-            avatar: "avatar1",
-            name: "Илья",
-            lastMessage: "Увидимся вечером!",
-            time: "12:45"
-        ))
+        ChatView(
+            chat: Chat(
+                id: "room_ilya",
+                avatar: "avatar1",
+                name: "Илья",
+                lastMessage: "Увидимся вечером!",
+                time: "12:45"
+            ),
+            vm: ChatViewModel(roomId: "room_ilya", repo: MockChatRepository())
+        )
     }
 }

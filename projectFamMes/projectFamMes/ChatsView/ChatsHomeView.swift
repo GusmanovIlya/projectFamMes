@@ -1,54 +1,25 @@
 import SwiftUI
 
-struct Chat: Identifiable {
-    let id = UUID()
-    let avatar: String
-    let name: String
-    let lastMessage: String
-    let time: String
-}
-
 struct ChatsHomeView: View {
-    let chats: [Chat] = [
-        Chat(
-            avatar: "avatar1",
-            name: "Илья",
-            lastMessage: "Привет, как дела?",
-            time: "12:45"
-        ),
-        Chat(
-            avatar: "avatar1",
-            name: "Алексей",
-            lastMessage: "Скинь, пожалуйста, код проекта",
-            time: "11:20"
-        ),
-        Chat(
-            avatar: "avatar1",
-            name: "Мария",
-            lastMessage: "Сегодня созвон в 18:00",
-            time: "10:05"
-        ),
-        Chat(
-            avatar: "avatar1",
-            name: "Дима",
-            lastMessage: "Я уже подъехал",
-            time: "09:41"
-        ),
-        Chat(
-            avatar: "avatar1",
-            name: "София",
-            lastMessage: "Спасибо большое 😊",
-            time: "Вчера"
-        )
-    ]
+    private let repo: MockChatRepository
+    @State private var vm: ChatsHomeViewModel
+
+    init() {
+        let repo = MockChatRepository()
+        self.repo = repo
+        _vm = State(initialValue: ChatsHomeViewModel(repo: repo))
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 LazyVStack(spacing: 8) {
-                    ForEach(chats) { chat in
+                    ForEach(vm.chats) { chat in
                         NavigationLink {
-                            ChatView(chat: chat)
+                            ChatView(
+                                chat: chat,
+                                vm: ChatViewModel(roomId: chat.id, repo: repo)
+                            )
                         } label: {
                             ChatRowView(chat: chat)
                         }
@@ -60,6 +31,9 @@ struct ChatsHomeView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Чаты")
+        }
+        .task {
+            await vm.load()
         }
     }
 }
