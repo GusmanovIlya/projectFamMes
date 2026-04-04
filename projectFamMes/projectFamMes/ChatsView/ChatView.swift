@@ -58,7 +58,7 @@ struct ChatView: View {
             } label: {
                 Image(systemName: "arrow.up")
                     .font(.headline)
-                    .frame(width: 44, height: 44)
+                    .frame(width: 44, height: 30)
             }
             .buttonStyle(.borderedProminent)
             .disabled(vm.draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)

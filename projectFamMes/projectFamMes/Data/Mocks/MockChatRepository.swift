@@ -6,21 +6,21 @@ actor MockChatRepository: ChatRepository {
             id: "room_ilya",
             avatar: "avatar1",
             name: "Илья",
-            lastMessage: "Привет, как дела?",
+            lastMessage: "Сделать вход для пользователей",
             time: "12:45"
         ),
         Chat(
             id: "room_alexey",
             avatar: "avatar2",
             name: "Алексей",
-            lastMessage: "Скинь, пожалуйста, код проекта",
+            lastMessage: "Создать бд для хранения",
             time: "11:20"
         ),
         Chat(
             id: "room_maria",
             avatar: "avatar3",
             name: "Мария",
-            lastMessage: "Сегодня созвон в 18:00",
+            lastMessage: "Добавить общие заметки, пока можно только парные",
             time: "10:05"
         )
     ]
@@ -47,7 +47,7 @@ actor MockChatRepository: ChatRepository {
                 id: UUID().uuidString,
                 roomId: "room_ilya",
                 senderId: "Илья",
-                text: "Привет, как дела?",
+                text: "Сделать вход для пользователей",
                 createdAt: .now.addingTimeInterval(-1800),
                 status: .delivered
             )

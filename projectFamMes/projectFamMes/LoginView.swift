@@ -1,10 +1,3 @@
-//
-//  LoginView.swift
-//  projectFamMes
-//
-//  Created by tvoryxuiny on 3/27/26.
-//
-
 import SwiftUI
 
 struct LoginView: View {

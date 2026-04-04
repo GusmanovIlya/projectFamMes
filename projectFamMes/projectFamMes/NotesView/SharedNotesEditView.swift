@@ -1,15 +1,15 @@
 import SwiftUI
 
-struct NotesEditView: View {
+struct SharedNotesEditView: View {
+    let vm: NotesViewModel
+    var note: SharedNote?
+
     @Environment(\.dismiss) private var dismiss
 
-    let vm: NotesViewModel
-    let note: PersonalNote?
+    @State private var title = ""
+    @State private var content = ""
 
-    @State private var title: String
-    @State private var content: String
-
-    init(vm: NotesViewModel, note: PersonalNote? = nil) {
+    init(vm: NotesViewModel, note: SharedNote? = nil) {
         self.vm = vm
         self.note = note
         _title = State(initialValue: note?.title ?? "")
@@ -19,17 +19,12 @@ struct NotesEditView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Заголовок") {
-                    TextField("Введите заголовок", text: $title)
-                }
+                TextField("Заголовок", text: $title)
 
-                Section("Текст") {
-                    TextEditor(text: $content)
-                        .frame(minHeight: 220)
-                }
+                TextEditor(text: $content)
+                    .frame(minHeight: 160)
             }
-            .navigationTitle(note == nil ? "Новая заметка" : "Редактировать")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle(note == nil ? "Новая общая" : "Редактировать")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Отмена") {
@@ -40,16 +35,21 @@ struct NotesEditView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Сохранить") {
                         Task {
+                            let members = note?.members ?? [NoteMember(id: UUID().uuidString)]
+
                             if let note {
-                                await vm.updatePersonalNote(
+                                await vm.updateSharedNote(
                                     id: note.id,
                                     title: title.isEmpty ? nil : title,
-                                    content: content
+                                    content: content,
+                                    members: members
                                 )
                             } else {
-                                await vm.createPersonalNote(
+                                await vm.createSharedNote(
+                                    roomId: UUID().uuidString,
                                     title: title.isEmpty ? nil : title,
-                                    content: content
+                                    content: content,
+                                    members: members
                                 )
                             }
 
@@ -61,4 +61,3 @@ struct NotesEditView: View {
         }
     }
 }
-
