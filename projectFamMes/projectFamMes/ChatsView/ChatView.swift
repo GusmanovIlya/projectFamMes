@@ -3,6 +3,23 @@ import SwiftUI
 struct ChatView: View {
     let chat: Chat
     @State var vm: ChatViewModel
+    let notesVM: NotesViewModel
+
+    @State private var showSharedNoteEditor = false
+
+    private var noteMembers: [NoteMember] {
+        [
+            NoteMember(id: "me", name: "Вы"),
+            NoteMember(
+                id: chat.id.replacingOccurrences(of: "room_", with: "user_"),
+                name: chat.name
+            )
+        ]
+    }
+
+    private var existingSharedNote: SharedNote? {
+        notesVM.sharedNote(for: chat.id)
+    }
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -29,7 +46,13 @@ struct ChatView: View {
         .navigationTitle(chat.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                Button {
+                    showSharedNoteEditor = true
+                } label: {
+                    Image(systemName: existingSharedNote == nil ? "square.and.pencil" : "note.text")
+                }
+
                 Image(chat.avatar)
                     .resizable()
                     .scaledToFill()
@@ -37,8 +60,23 @@ struct ChatView: View {
                     .clipShape(Circle())
             }
         }
+        .sheet(isPresented: $showSharedNoteEditor) {
+            if let existingSharedNote {
+                SharedNotesEditView(vm: notesVM, note: existingSharedNote)
+            } else {
+                SharedNotesEditView(
+                    vm: notesVM,
+                    presetRoomId: chat.id,
+                    presetMembers: noteMembers,
+                    presetTitle: "Заметка с \(chat.name)"
+                )
+            }
+        }
         .task {
             await vm.load()
+            if notesVM.sharedNotes.isEmpty {
+                await notesVM.loadSharedNotes()
+            }
         }
     }
 
@@ -98,6 +136,8 @@ private struct MessageBubble: View {
 }
 
 #Preview {
+    let notesVM = NotesViewModel(repository: MockNotesRepository())
+
     NavigationStack {
         ChatView(
             chat: Chat(
@@ -107,7 +147,8 @@ private struct MessageBubble: View {
                 lastMessage: "Увидимся вечером!",
                 time: "12:45"
             ),
-            vm: ChatViewModel(roomId: "room_ilya", repo: MockChatRepository())
+            vm: ChatViewModel(roomId: "room_ilya", repo: MockChatRepository()),
+            notesVM: notesVM
         )
     }
 }

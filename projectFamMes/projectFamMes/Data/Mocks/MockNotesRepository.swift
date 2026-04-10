@@ -12,7 +12,7 @@ actor MockNotesRepository: NotesRepository {
                 roomId: UUID().uuidString,
                 title: "Общая заметка",
                 content: "Тест1",
-                members: [NoteMember(id: UUID().uuidString), NoteMember(id: UUID().uuidString)],
+                members: [NoteMember(id: UUID().uuidString, name: "Вы"), NoteMember(id: UUID().uuidString, name: "Илья")],
                 updatedAt: .now
             )
         ]

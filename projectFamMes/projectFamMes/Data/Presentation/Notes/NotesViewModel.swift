@@ -42,6 +42,15 @@ final class NotesViewModel {
         isLoading = false
     }
 
+    func reloadAll() async {
+        await loadPersonalNotes()
+        await loadSharedNotes()
+    }
+
+    func sharedNote(for roomId: EntityID) -> SharedNote? {
+        sharedNotes.first(where: { $0.roomId == roomId })
+    }
+
     func createPersonalNote(title: String?, content: String) async {
         errorMessage = nil
 
@@ -68,6 +77,7 @@ final class NotesViewModel {
                 content: content,
                 members: members
             )
+            sharedNotes.removeAll { $0.roomId == roomId }
             sharedNotes.insert(newNote, at: 0)
         } catch {
             errorMessage = error.localizedDescription
@@ -113,6 +123,29 @@ final class NotesViewModel {
             }
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+
+    func upsertSharedNote(
+        roomId: EntityID,
+        title: String?,
+        content: String,
+        members: [NoteMember]
+    ) async {
+        if let existing = sharedNote(for: roomId) {
+            await updateSharedNote(
+                id: existing.id,
+                title: title,
+                content: content,
+                members: members
+            )
+        } else {
+            await createSharedNote(
+                roomId: roomId,
+                title: title,
+                content: content,
+                members: members
+            )
         }
     }
 

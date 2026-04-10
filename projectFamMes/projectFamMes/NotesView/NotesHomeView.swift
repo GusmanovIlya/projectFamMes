@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct NotesHomeView: View {
-    @State private var vm = NotesViewModel(repository: MockNotesRepository())
+    @State var vm: NotesViewModel
 
     @State private var showCreatePersonal = false
     @State private var showCreateShared = false

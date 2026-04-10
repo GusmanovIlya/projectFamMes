@@ -3,10 +3,12 @@ import SwiftUI
 struct ChatsHomeView: View {
     private let repo: MockChatRepository
     @State private var vm: ChatsHomeViewModel
+    let notesVM: NotesViewModel
 
-    init() {
+    init(notesVM: NotesViewModel) {
         let repo = MockChatRepository()
         self.repo = repo
+        self.notesVM = notesVM
         _vm = State(initialValue: ChatsHomeViewModel(repo: repo))
     }
 
@@ -18,7 +20,8 @@ struct ChatsHomeView: View {
                         NavigationLink {
                             ChatView(
                                 chat: chat,
-                                vm: ChatViewModel(roomId: chat.id, repo: repo)
+                                vm: ChatViewModel(roomId: chat.id, repo: repo),
+                                notesVM: notesVM
                             )
                         } label: {
                             ChatRowView(chat: chat)
@@ -79,5 +82,6 @@ struct ChatRowView: View {
 }
 
 #Preview {
-    ChatsHomeView()
+    let notesVM = NotesViewModel(repository: MockNotesRepository())
+    ChatsHomeView(notesVM: notesVM)
 }

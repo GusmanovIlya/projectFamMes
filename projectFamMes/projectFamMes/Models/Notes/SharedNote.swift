@@ -1,10 +1,12 @@
 import Foundation
 
 public struct NoteMember: Identifiable, Codable, Hashable, Sendable {
-    public let id: EntityID   // userId
+    public let id: EntityID
+    public let name: String
 
-    public init(id: EntityID) {
+    public init(id: EntityID, name: String) {
         self.id = id
+        self.name = name
     }
 }
 
