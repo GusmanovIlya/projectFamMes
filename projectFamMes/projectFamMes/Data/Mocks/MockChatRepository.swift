@@ -6,6 +6,7 @@ actor MockChatRepository: ChatRepository {
             id: "room_ilya",
             avatar: "avatar1",
             name: "Илья",
+            username: "ilya",
             lastMessage: "Сделать вход для пользователей",
             time: "12:45"
         ),
@@ -13,6 +14,7 @@ actor MockChatRepository: ChatRepository {
             id: "room_alexey",
             avatar: "avatar2",
             name: "Алексей",
+            username: "alexey",
             lastMessage: "Создать бд для хранения",
             time: "11:20"
         ),
@@ -20,9 +22,18 @@ actor MockChatRepository: ChatRepository {
             id: "room_maria",
             avatar: "avatar3",
             name: "Мария",
+            username: "maria",
             lastMessage: "Добавить общие заметки, пока можно только парные",
             time: "10:05"
         )
+    ]
+
+    private var allUsers: [UserSummary] = [
+        UserSummary(id: "user_ilya", name: "Илья", username: "ilya"),
+        UserSummary(id: "user_alexey", name: "Алексей", username: "alexey"),
+        UserSummary(id: "user_maria", name: "Мария", username: "maria"),
+        UserSummary(id: "user_kirill", name: "Кирилл", username: "kirill"),
+        UserSummary(id: "user_arina", name: "Арина", username: "arina")
     ]
 
     private var messagesByRoomId: [EntityID: [Message]] = [
@@ -84,6 +95,21 @@ actor MockChatRepository: ChatRepository {
     }
 
     func sendMessage(roomId: EntityID, senderId: EntityID, text: String) async throws -> Message {
+        if !chats.contains(where: { $0.id == roomId }) {
+            let username = roomId.replacingOccurrences(of: "room_", with: "")
+            if let user = allUsers.first(where: { normalize($0.username) == normalize(username) }) {
+                let newChat = Chat(
+                    id: roomId,
+                    avatar: avatarName(for: user),
+                    name: user.name,
+                    username: user.username,
+                    lastMessage: "",
+                    time: ""
+                )
+                chats.insert(newChat, at: 0)
+            }
+        }
+
         let message = Message(
             id: UUID().uuidString,
             roomId: roomId,
@@ -98,9 +124,52 @@ actor MockChatRepository: ChatRepository {
         if let index = chats.firstIndex(where: { $0.id == roomId }) {
             chats[index].lastMessage = text
             chats[index].time = Self.timeFormatter.string(from: .now)
+
+            let updatedChat = chats.remove(at: index)
+            chats.insert(updatedChat, at: 0)
         }
 
         return message
+    }
+
+    func fetchAllUsers() async throws -> [UserSummary] {
+        allUsers
+    }
+
+    func searchAllUsers(byUsername query: String) async throws -> [UserSummary] {
+        let trimmed = normalize(query)
+        guard !trimmed.isEmpty else { return allUsers }
+
+        return allUsers.filter {
+            normalize($0.name).contains(trimmed) ||
+            normalize($0.username).contains(trimmed)
+        }
+    }
+
+    func fetchKnownUsers() async throws -> [UserSummary] {
+        let usernamesInChats = Set(chats.map { normalize($0.username) })
+
+        return allUsers.filter { usernamesInChats.contains(normalize($0.username)) }
+    }
+
+    private func avatarName(for user: UserSummary) -> String {
+        switch normalize(user.username) {
+        case "ilya":
+            return "avatar1"
+        case "alexey":
+            return "avatar2"
+        case "maria":
+            return "avatar3"
+        default:
+            return "avatar4"
+        }
+    }
+
+    private func normalize(_ text: String) -> String {
+        text
+            .lowercased()
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "@", with: "")
     }
 }
 

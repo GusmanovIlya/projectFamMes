@@ -4,19 +4,30 @@ struct SharedNoteView: View {
     let note: SharedNote
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(note.title ?? "Без названия")
-                .font(.title2)
-                .bold()
+        ScrollView {
+            VStack(alignment: .leading, spacing: 12) {
+                if let title = note.title, !title.isEmpty {
+                    Text(title)
+                        .font(.title2.bold())
+                }
 
-            Text(note.content)
+                Text(note.content)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
-            Text("Участников: \(note.members.count)")
+                HStack {
+                    Text(note.updatedAt.formatted(date: .abbreviated, time: .shortened))
+
+                    Spacer()
+
+                    Label("\(note.members.count)", systemImage: "person.2")
+                }
+                .font(.caption)
                 .foregroundStyle(.secondary)
-
-            Spacer()
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
         }
-        .padding()
-        .navigationTitle("Общая заметка")
+        .navigationTitle("Заметка")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }

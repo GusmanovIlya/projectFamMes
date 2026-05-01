@@ -2,6 +2,7 @@ import SwiftUI
 
 struct NotesHomeView: View {
     @State var vm: NotesViewModel
+    let chatRepository: ChatRepository
 
     @State private var showCreatePersonal = false
     @State private var showCreateShared = false
@@ -120,13 +121,17 @@ struct NotesHomeView: View {
                 NotesEditView(vm: vm)
             }
             .sheet(isPresented: $showCreateShared) {
-                SharedNotesEditView(vm: vm)
+                SharedNotesEditView(vm: vm, chatRepository: chatRepository)
             }
             .sheet(item: $editingPersonalNote) { note in
                 NotesEditView(vm: vm, note: note)
             }
             .sheet(item: $editingSharedNote) { note in
-                SharedNotesEditView(vm: vm, note: note)
+                SharedNotesEditView(
+                    vm: vm,
+                    chatRepository: chatRepository,
+                    note: note
+                )
             }
         }
         .task {
@@ -135,7 +140,6 @@ struct NotesHomeView: View {
         }
     }
 }
-
 
 struct NoteCardView: View {
     let title: String

@@ -4,6 +4,7 @@ struct SharedNotesEditView: View {
     @Environment(\.dismiss) private var dismiss
 
     let vm: NotesViewModel
+    let chatRepository: ChatRepository
     let note: SharedNote?
 
     let presetRoomId: EntityID?
@@ -13,14 +14,20 @@ struct SharedNotesEditView: View {
     @State private var title: String
     @State private var content: String
 
+    @State private var availableUsers: [UserSummary] = []
+    @State private var participantsSearch = ""
+    @State private var selectedMembers: [NoteMember] = []
+
     init(
         vm: NotesViewModel,
+        chatRepository: ChatRepository,
         note: SharedNote? = nil,
         presetRoomId: EntityID? = nil,
         presetMembers: [NoteMember] = [],
         presetTitle: String? = nil
     ) {
         self.vm = vm
+        self.chatRepository = chatRepository
         self.note = note
         self.presetRoomId = presetRoomId
         self.presetMembers = presetMembers
@@ -28,26 +35,78 @@ struct SharedNotesEditView: View {
 
         _title = State(initialValue: note?.title ?? presetTitle ?? "")
         _content = State(initialValue: note?.content ?? "")
+        _selectedMembers = State(initialValue: note?.members ?? presetMembers)
     }
 
-    private var displayMembers: [NoteMember] {
-        if let note {
-            return note.members
+    private var filteredUsers: [UserSummary] {
+        let query = normalized(participantsSearch)
+        guard !query.isEmpty else { return availableUsers }
+
+        return availableUsers.filter {
+            normalized($0.name).contains(query) ||
+            normalized($0.username).contains(query)
         }
-        return presetMembers
     }
 
     private var participantsText: String {
-        let names = displayMembers.map(\.name).filter { !$0.isEmpty }
-        return names.isEmpty ? "Участники не указаны" : names.joined(separator: ", ")
+        let names = selectedMembers.map(\.name).filter { !$0.isEmpty }
+        return names.isEmpty ? "Нажми, чтобы выбрать участников" : names.joined(separator: ", ")
     }
 
     var body: some View {
         NavigationStack {
             Form {
-                Section("Участники") {
-                    Text(participantsText)
-                        .foregroundStyle(.primary)
+                Section {
+                    DisclosureGroup {
+                        TextField("Поиск по @username", text: $participantsSearch)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+
+                        if filteredUsers.isEmpty {
+                            ContentUnavailableView(
+                                "Никого не найдено",
+                                systemImage: "person.crop.circle.badge.exclamationmark",
+                                description: Text("Появятся только люди, с кем уже есть переписка")
+                            )
+                        } else {
+                            ForEach(filteredUsers) { user in
+                                Button {
+                                    toggleUser(user)
+                                } label: {
+                                    HStack(spacing: 12) {
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(user.name)
+                                                .foregroundStyle(.primary)
+
+                                            Text("@\(user.username)")
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+
+                                        Spacer()
+
+                                        if isSelected(user) {
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .foregroundStyle(.blue)
+                                        } else {
+                                            Image(systemName: "circle")
+                                                .foregroundStyle(.secondary)
+                                        }
+                                    }
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    } label: {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Участники")
+                                .font(.headline)
+
+                            Text(participantsText)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                 }
 
                 Section("Заголовок") {
@@ -74,33 +133,83 @@ struct SharedNotesEditView: View {
                             let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
                             let finalTitle = trimmedTitle.isEmpty ? nil : trimmedTitle
 
+                            let finalMembers = normalizedMembers()
+
                             if let note {
                                 await vm.updateSharedNote(
                                     id: note.id,
                                     title: finalTitle,
                                     content: content,
-                                    members: note.members
+                                    members: finalMembers
                                 )
                             } else {
                                 let roomId = presetRoomId ?? UUID().uuidString
-                                let members = presetMembers.isEmpty
-                                    ? [NoteMember(id: "me", name: "Вы")]
-                                    : presetMembers
 
                                 await vm.createSharedNote(
                                     roomId: roomId,
                                     title: finalTitle,
                                     content: content,
-                                    members: members
+                                    members: finalMembers
                                 )
                             }
 
                             dismiss()
                         }
                     }
-                    .disabled(content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .disabled(
+                        content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+                        selectedMembers.isEmpty
+                    )
                 }
             }
+            .task {
+                await loadUsers()
+            }
         }
+    }
+
+    private func loadUsers() async {
+        do {
+            availableUsers = try await chatRepository.fetchKnownUsers()
+
+            if selectedMembers.isEmpty, let note {
+                selectedMembers = note.members
+            } else if selectedMembers.isEmpty {
+                selectedMembers = presetMembers
+            }
+        } catch {
+            availableUsers = []
+        }
+    }
+
+    private func toggleUser(_ user: UserSummary) {
+        let member = NoteMember(id: user.id, name: user.name)
+
+        if let index = selectedMembers.firstIndex(where: { $0.id == member.id }) {
+            selectedMembers.remove(at: index)
+        } else {
+            selectedMembers.append(member)
+        }
+    }
+
+    private func isSelected(_ user: UserSummary) -> Bool {
+        selectedMembers.contains(where: { $0.id == user.id })
+    }
+
+    private func normalizedMembers() -> [NoteMember] {
+        var result = selectedMembers
+
+        if !result.contains(where: { $0.id == "me" }) {
+            result.insert(NoteMember(id: "me", name: "Вы"), at: 0)
+        }
+
+        return result
+    }
+
+    private func normalized(_ text: String) -> String {
+        text
+            .lowercased()
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: "@", with: "")
     }
 }
