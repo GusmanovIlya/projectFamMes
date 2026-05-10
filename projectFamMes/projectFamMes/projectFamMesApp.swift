@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 @main
 struct projectFamMesApp: App {
@@ -6,5 +7,13 @@ struct projectFamMesApp: App {
         WindowGroup {
             RootView()
         }
+        .modelContainer(for: [
+            UserEntity.self,
+            ChatEntity.self,
+            MessageEntity.self,
+            PersonalNoteEntity.self,
+            SharedNoteEntity.self,
+            AppSessionEntity.self
+        ])
     }
 }

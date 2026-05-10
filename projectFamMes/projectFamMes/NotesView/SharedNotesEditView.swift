@@ -15,7 +15,6 @@ struct SharedNotesEditView: View {
     @State private var content: String
 
     @State private var availableUsers: [UserSummary] = []
-    @State private var participantsSearch = ""
     @State private var selectedMembers: [NoteMember] = []
 
     init(
@@ -38,16 +37,6 @@ struct SharedNotesEditView: View {
         _selectedMembers = State(initialValue: note?.members ?? presetMembers)
     }
 
-    private var filteredUsers: [UserSummary] {
-        let query = normalized(participantsSearch)
-        guard !query.isEmpty else { return availableUsers }
-
-        return availableUsers.filter {
-            normalized($0.name).contains(query) ||
-            normalized($0.username).contains(query)
-        }
-    }
-
     private var participantsText: String {
         let names = selectedMembers.map(\.name).filter { !$0.isEmpty }
         return names.isEmpty ? "Нажми, чтобы выбрать участников" : names.joined(separator: ", ")
@@ -58,18 +47,14 @@ struct SharedNotesEditView: View {
             Form {
                 Section {
                     DisclosureGroup {
-                        TextField("Поиск по @username", text: $participantsSearch)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-
-                        if filteredUsers.isEmpty {
+                        if availableUsers.isEmpty {
                             ContentUnavailableView(
-                                "Никого не найдено",
+                                "Нет доступных участников",
                                 systemImage: "person.crop.circle.badge.exclamationmark",
-                                description: Text("Появятся только люди, с кем уже есть переписка")
+                                description: Text("Здесь будут только люди, с которыми уже есть чат")
                             )
                         } else {
-                            ForEach(filteredUsers) { user in
+                            ForEach(availableUsers) { user in
                                 Button {
                                     toggleUser(user)
                                 } label: {
@@ -204,12 +189,5 @@ struct SharedNotesEditView: View {
         }
 
         return result
-    }
-
-    private func normalized(_ text: String) -> String {
-        text
-            .lowercased()
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .replacingOccurrences(of: "@", with: "")
     }
 }

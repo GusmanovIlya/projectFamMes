@@ -2,8 +2,18 @@ import SwiftUI
 
 struct ChatView: View {
     let chat: Chat
-    @State var vm: ChatViewModel
+    @State private var vm: ChatViewModel
     let chatRepository: ChatRepository
+
+    init(
+        chat: Chat,
+        vm: ChatViewModel,
+        chatRepository: ChatRepository
+    ) {
+        self.chat = chat
+        _vm = State(initialValue: vm)
+        self.chatRepository = chatRepository
+    }
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -52,21 +62,24 @@ struct ChatView: View {
                 .background(.background)
                 .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
 
-            Button {
-                Task {
-                    await vm.sendMessage()
-                }
-            } label: {
-                Image(systemName: "arrow.up")
-                    .font(.headline)
-                    .frame(width: 44, height: 30)
-            }
-            .buttonStyle(.borderedProminent)
-            .disabled(vm.draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            sendButton
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
         .background(.ultraThinMaterial)
+    }
+
+    private var sendButton: some View {
+        Button {
+            Task {
+                await vm.sendMessage()
+            }
+        } label: {
+            Image(systemName: "arrow.up")
+                .font(.headline)
+        }
+        .buttonStyle(.borderedProminent)
+        .disabled(vm.draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
     }
 }
 
@@ -77,7 +90,9 @@ private struct MessageBubble: View {
 
     var body: some View {
         HStack {
-            if isOutgoing { Spacer(minLength: 48) }
+            if isOutgoing {
+                Spacer(minLength: 48)
+            }
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(text)
@@ -93,7 +108,9 @@ private struct MessageBubble: View {
             .background(isOutgoing ? Color.blue.opacity(0.16) : Color(.systemBackground))
             .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
 
-            if !isOutgoing { Spacer(minLength: 48) }
+            if !isOutgoing {
+                Spacer(minLength: 48)
+            }
         }
     }
 }
@@ -104,14 +121,14 @@ private struct MessageBubble: View {
     NavigationStack {
         ChatView(
             chat: Chat(
-                id: "room_ilya",
+                id: "room_gusmanovilya",
                 avatar: "avatar1",
                 name: "Илья",
-                username: "ilya",
+                username: "GusmanovIlya",
                 lastMessage: "Увидимся вечером!",
                 time: "12:45"
             ),
-            vm: ChatViewModel(roomId: "room_ilya", repo: chatRepo),
+            vm: ChatViewModel(roomId: "room_gusmanovilya", repo: chatRepo),
             chatRepository: chatRepo
         )
     }

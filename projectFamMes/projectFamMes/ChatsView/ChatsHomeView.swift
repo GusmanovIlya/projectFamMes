@@ -1,10 +1,10 @@
 import SwiftUI
 
 struct ChatsHomeView: View {
-    private let repo: MockChatRepository
+    private let repo: any ChatRepository
     @State private var vm: ChatsHomeViewModel
 
-    init(repo: MockChatRepository) {
+    init(repo: any ChatRepository) {
         self.repo = repo
         _vm = State(initialValue: ChatsHomeViewModel(repo: repo))
     }
@@ -28,6 +28,11 @@ struct ChatsHomeView: View {
         }
         .task {
             await vm.load()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .chatsDidChange)) { _ in
+            Task {
+                await vm.load()
+            }
         }
     }
 
@@ -148,8 +153,12 @@ struct FoundUserRowView: View {
                 Text(user.name)
                     .font(.headline)
 
-                Text("Начать переписку")
+                Text("@\(user.username)")
                     .font(.subheadline)
+                    .foregroundStyle(.secondary)
+
+                Text("Начать переписку")
+                    .font(.caption)
                     .foregroundStyle(.secondary)
             }
 
@@ -168,10 +177,10 @@ struct FoundUserRowView: View {
 #Preview("Chat Row") {
     ChatRowView(
         chat: Chat(
-            id: "room_ilya",
+            id: "room_gusmanovilya",
             avatar: "avatar1",
             name: "Илья",
-            username: "ilya",
+            username: "GusmanovIlya",
             lastMessage: "Сделать вход для пользователей",
             time: "12:45"
         )

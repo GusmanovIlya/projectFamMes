@@ -1,6 +1,6 @@
 import Foundation
 
-struct Chat: Identifiable, Hashable {
+struct Chat: Identifiable, Hashable, Codable {
     let id: EntityID
     let avatar: String
     let name: String

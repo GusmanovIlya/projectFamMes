@@ -4,14 +4,14 @@ import Observation
 @MainActor
 @Observable
 final class ChatsHomeViewModel {
-    private let repo: ChatRepository
+    private let repo: any ChatRepository
 
     var chats: [Chat] = []
     var allUsers: [UserSummary] = []
     var searchText = ""
     var errorMessage: String?
 
-    init(repo: ChatRepository) {
+    init(repo: any ChatRepository) {
         self.repo = repo
     }
 
@@ -71,14 +71,14 @@ final class ChatsHomeViewModel {
     }
 
     private func roomId(for user: UserSummary) -> EntityID {
-        "room_" + user.id.replacingOccurrences(of: "user_", with: "")
+        "room_" + normalized(user.username)
     }
 
     private func avatarName(for user: UserSummary) -> String {
         switch normalized(user.username) {
-        case "ilya":
+        case "gusmanovilya":
             return "avatar1"
-        case "alexey":
+        case "annasmirnova", "alexey":
             return "avatar2"
         case "maria":
             return "avatar3"

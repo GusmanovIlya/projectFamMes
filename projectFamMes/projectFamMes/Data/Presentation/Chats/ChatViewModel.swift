@@ -40,6 +40,7 @@ final class ChatViewModel {
                 senderId: currentUserId,
                 text: text
             )
+
             messages.append(newMessage)
             draft = ""
         } catch {
