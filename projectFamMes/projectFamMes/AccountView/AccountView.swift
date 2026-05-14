@@ -8,6 +8,7 @@ struct AccountView: View {
 
     @State private var isEditingBio = false
     @State private var bioDraft = ""
+    @State private var showLogoutConfirmation = false
 
     var body: some View {
         VStack(spacing: 12) {
@@ -53,7 +54,7 @@ struct AccountView: View {
                 .frame(height: 24)
 
             Button(role: .destructive) {
-                authViewModel.logout()
+                showLogoutConfirmation = true
             } label: {
                 Text("Выйти из аккаунта")
                     .font(.headline)
@@ -61,6 +62,17 @@ struct AccountView: View {
                     .padding()
                     .background(Color.red.opacity(0.12))
                     .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+            }
+            .confirmationDialog(
+                "Вы уверены, что хотите выйти из аккаунта?",
+                isPresented: $showLogoutConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Выйти", role: .destructive) {
+                    authViewModel.logout()
+                }
+
+                Button("Отмена", role: .cancel) { }
             }
             .padding(.horizontal, 24)
         }

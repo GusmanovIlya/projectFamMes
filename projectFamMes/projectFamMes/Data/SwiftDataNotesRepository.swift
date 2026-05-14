@@ -57,12 +57,7 @@ final class SwiftDataNotesRepository: NotesRepository {
     }
 
     func fetchSharedNotes() async throws -> [SharedNote] {
-        let owner = username
-
         let descriptor = FetchDescriptor<SharedNoteEntity>(
-            predicate: #Predicate {
-                $0.ownerUsername == owner
-            },
             sortBy: [SortDescriptor(\.updatedAt, order: .reverse)]
         )
 
@@ -135,11 +130,9 @@ final class SwiftDataNotesRepository: NotesRepository {
     }
 
     private func findSharedNote(id: EntityID) throws -> SharedNoteEntity {
-        let owner = username
-
         let descriptor = FetchDescriptor<SharedNoteEntity>(
             predicate: #Predicate {
-                $0.id == id && $0.ownerUsername == owner
+                $0.id == id
             }
         )
 
@@ -153,7 +146,7 @@ final class SwiftDataNotesRepository: NotesRepository {
 
         return note
     }
-
+    
     private static func normalize(_ text: String) -> String {
         text
             .lowercased()

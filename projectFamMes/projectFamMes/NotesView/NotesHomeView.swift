@@ -13,88 +13,9 @@ struct NotesHomeView: View {
     var body: some View {
         NavigationStack {
             List {
-                if !vm.personalNotes.isEmpty {
-                    Section("Личные") {
-                        ForEach(vm.personalNotes) { note in
-                            NoteCardView(
-                                title: note.title ?? "Без названия",
-                                content: note.content,
-                                updatedAt: note.updatedAt,
-                                membersCount: nil
-                            )
-                            .overlay {
-                                NavigationLink(destination: NoteView(note: note)) {
-                                    EmptyView()
-                                }
-                                .opacity(0)
-                            }
-                            .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
-                            .listRowSeparator(.hidden)
-                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                Button(role: .destructive) {
-                                    Task {
-                                        await vm.deletePersonalNote(id: note.id)
-                                    }
-                                } label: {
-                                    Label("Удалить", systemImage: "trash")
-                                }
-
-                                Button {
-                                    editingPersonalNote = note
-                                } label: {
-                                    Label("Изменить", systemImage: "pencil")
-                                }
-                                .tint(.blue)
-                            }
-                        }
-                    }
-                }
-
-                if !vm.sharedNotes.isEmpty {
-                    Section("Общие") {
-                        ForEach(vm.sharedNotes) { note in
-                            NoteCardView(
-                                title: note.title ?? "Без названия",
-                                content: note.content,
-                                updatedAt: note.updatedAt,
-                                membersCount: note.members.count
-                            )
-                            .overlay {
-                                NavigationLink(destination: SharedNoteView(note: note)) {
-                                    EmptyView()
-                                }
-                                .opacity(0)
-                            }
-                            .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
-                            .listRowSeparator(.hidden)
-                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                Button(role: .destructive) {
-                                    Task {
-                                        await vm.deleteSharedNote(id: note.id)
-                                    }
-                                } label: {
-                                    Label("Удалить", systemImage: "trash")
-                                }
-
-                                Button {
-                                    editingSharedNote = note
-                                } label: {
-                                    Label("Изменить", systemImage: "pencil")
-                                }
-                                .tint(.blue)
-                            }
-                        }
-                    }
-                }
-
-                if vm.personalNotes.isEmpty && vm.sharedNotes.isEmpty {
-                    ContentUnavailableView(
-                        "Нет заметок",
-                        systemImage: "note.text",
-                        description: Text("Создай первую личную или общую заметку")
-                    )
-                    .listRowSeparator(.hidden)
-                }
+                personalSection
+                sharedSection
+                emptySection
             }
             .listStyle(.plain)
             .navigationTitle("Заметки")
@@ -137,6 +58,106 @@ struct NotesHomeView: View {
         .task {
             await vm.loadPersonalNotes()
             await vm.loadSharedNotes()
+        }
+    }
+
+    @ViewBuilder
+    private var personalSection: some View {
+        if !vm.personalNotes.isEmpty {
+            Section("Личные") {
+                ForEach(vm.personalNotes) { note in
+                    personalRow(note)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var sharedSection: some View {
+        if !vm.sharedNotes.isEmpty {
+            Section("Общие") {
+                ForEach(vm.sharedNotes) { note in
+                    sharedRow(note)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var emptySection: some View {
+        if vm.personalNotes.isEmpty && vm.sharedNotes.isEmpty {
+            ContentUnavailableView(
+                "Нет заметок",
+                systemImage: "note.text",
+                description: Text("Создай первую личную или общую заметку")
+            )
+            .listRowSeparator(.hidden)
+        }
+    }
+
+    private func personalRow(_ note: PersonalNote) -> some View {
+        NoteCardView(
+            title: note.title ?? "Без названия",
+            content: note.content,
+            updatedAt: note.updatedAt,
+            membersCount: nil
+        )
+        .overlay {
+            NavigationLink(destination: NoteView(note: note)) {
+                EmptyView()
+            }
+            .opacity(0)
+        }
+        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+        .listRowSeparator(.hidden)
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            Button(role: .destructive) {
+                Task {
+                    await vm.deletePersonalNote(id: note.id)
+                }
+            } label: {
+                Label("Удалить", systemImage: "trash")
+            }
+
+            Button {
+                editingPersonalNote = note
+            } label: {
+                Label("Изменить", systemImage: "pencil")
+            }
+            .tint(.blue)
+        }
+    }
+
+    private func sharedRow(_ note: SharedNote) -> some View {
+        NoteCardView(
+            title: note.title ?? "Без названия",
+            content: note.content,
+            updatedAt: note.updatedAt,
+            membersCount: note.members.count
+        )
+        .overlay {
+            NavigationLink(destination: SharedNoteView(note: note)) {
+                EmptyView()
+            }
+            .opacity(0)
+        }
+        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+        .listRowSeparator(.hidden)
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            Button(role: .destructive) {
+                Task {
+                    await vm.deleteSharedNote(id: note.id)
+                }
+            } label: {
+                Label("Удалить", systemImage: "trash")
+            }
+
+            Button {
+                editingSharedNote = note
+            } label: {
+                Label("Изменить", systemImage: "pencil")
+            }
+            .tint(.blue)
         }
     }
 }

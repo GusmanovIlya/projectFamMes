@@ -24,7 +24,6 @@ struct SharedNoteView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
         }
         .navigationTitle("Заметка")

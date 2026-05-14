@@ -7,38 +7,45 @@ actor MockNotesRepository: NotesRepository {
     private var shared: [SharedNote] = []
     
     private var personalKey: String {
-        "personal_notes_\(username.lowercased())"
+        "personal_notes_\(normalizedUsername)"
     }
     
     private var sharedKey: String {
-        "shared_notes_\(username.lowercased())"
+        "shared_notes_global"
+    }
+
+    private var normalizedUsername: String {
+        username
+            .lowercased()
+            .replacingOccurrences(of: " ", with: "")
+            .replacingOccurrences(of: ".", with: "")
+            .replacingOccurrences(of: "_", with: "")
+            .replacingOccurrences(of: "@", with: "")
     }
     
     init(username: String) {
         self.username = username
 
-        let normalizedUsername = username
-            .lowercased()
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-            .replacingOccurrences(of: "@", with: "")
-
-        let personalKey = "personal_notes_\(normalizedUsername)"
-        let sharedKey = "shared_notes_\(normalizedUsername)"
         let hasInitializedKey = "notes_initialized_\(normalizedUsername)"
+        let hasInitializedSharedKey = "shared_notes_global_initialized"
 
         let hasInitialized = UserDefaults.standard.bool(forKey: hasInitializedKey)
+        let hasInitializedShared = UserDefaults.standard.bool(forKey: hasInitializedSharedKey)
 
         if hasInitialized {
             self.personal = Self.loadPersonalNotes(key: personalKey)
-            self.shared = Self.loadSharedNotes(key: sharedKey)
         } else {
             self.personal = Self.makeMockPersonalNotes(username: normalizedUsername)
-            self.shared = Self.makeMockSharedNotes(username: normalizedUsername)
-
             savePersonalNotes()
-            saveSharedNotes()
-
             UserDefaults.standard.set(true, forKey: hasInitializedKey)
+        }
+
+        if hasInitializedShared {
+            self.shared = Self.loadSharedNotes(key: sharedKey)
+        } else {
+            self.shared = Self.makeGlobalMockSharedNotes()
+            saveSharedNotes()
+            UserDefaults.standard.set(true, forKey: hasInitializedSharedKey)
         }
     }
 
@@ -172,6 +179,7 @@ actor MockNotesRepository: NotesRepository {
                     updatedAt: .now.addingTimeInterval(-9000)
                 )
             ]
+
         case "gusmanovilya":
             return [
                 PersonalNote(
@@ -187,44 +195,25 @@ actor MockNotesRepository: NotesRepository {
                     updatedAt: .now.addingTimeInterval(-7200)
                 )
             ]
+
         default:
             return []
         }
     }
 
-    private static func makeMockSharedNotes(username: String) -> [SharedNote] {
-        switch username.lowercased() {
-        case "annasmirnova":
-            return [
-                SharedNote(
-                    id: "anna_shared_1",
-                    roomId: "room_gusmanovilya",
-                    title: "Общая заметка с Ильёй",
-                    content: "Форма входа готова к тесту: есть автозаполнение демо-аккаунтов и регистрация.",
-                    members: [
-                        NoteMember(id: "user_anna_smirnova", name: "Анна"),
-                        NoteMember(id: "user_gusmanov_ilya", name: "Илья")
-                    ],
-                    updatedAt: .now.addingTimeInterval(-1800)
-                )
-            ]
-        case "gusmanovilya":
-            return [
-                SharedNote(
-                    id: "ilya_shared_1",
-                    roomId: "room_annasmirnova",
-                    title: "Общая заметка с Анной",
-                    content: "Нужно показать два готовых аккаунта и дать возможность создать новый.",
-                    members: [
-                        NoteMember(id: "user_gusmanov_ilya", name: "Илья"),
-                        NoteMember(id: "user_anna_smirnova", name: "Анна")
-                    ],
-                    updatedAt: .now.addingTimeInterval(-1200)
-                )
-            ]
-        default:
-            return []
-        }
+    private static func makeGlobalMockSharedNotes() -> [SharedNote] {
+        [
+            SharedNote(
+                id: "shared_note_global_1",
+                roomId: "global_room",
+                title: "Общая заметка для всех",
+                content: "Эту заметку видят все пользователи. Любой пользователь может открыть её и изменить.",
+                members: [
+                    NoteMember(id: "user_1", name: "Все пользователи")
+                ],
+                updatedAt: .now.addingTimeInterval(-1200)
+            )
+        ]
     }
 
     private static func loadPersonalNotes(key: String) -> [PersonalNote] {
