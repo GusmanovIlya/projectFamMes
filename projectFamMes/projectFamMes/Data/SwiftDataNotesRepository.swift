@@ -57,11 +57,21 @@ final class SwiftDataNotesRepository: NotesRepository {
     }
 
     func fetchSharedNotes() async throws -> [SharedNote] {
+        let owner = username
+        let currentUserId = try fetchCurrentUserId()
+
         let descriptor = FetchDescriptor<SharedNoteEntity>(
             sortBy: [SortDescriptor(\.updatedAt, order: .reverse)]
         )
 
-        return try modelContext.fetch(descriptor).map(\.model)
+        return try modelContext.fetch(descriptor)
+            .filter { note in
+                note.ownerUsername == owner ||
+                note.members.contains { member in
+                    member.id == currentUserId
+                }
+            }
+            .map(\.model)
     }
 
     func createSharedNote(
@@ -130,13 +140,17 @@ final class SwiftDataNotesRepository: NotesRepository {
     }
 
     private func findSharedNote(id: EntityID) throws -> SharedNoteEntity {
+        let owner = username
+        let currentUserId = try fetchCurrentUserId()
+
         let descriptor = FetchDescriptor<SharedNoteEntity>(
             predicate: #Predicate {
                 $0.id == id
             }
         )
 
-        guard let note = try modelContext.fetch(descriptor).first else {
+        guard let note = try modelContext.fetch(descriptor).first,
+              note.ownerUsername == owner || note.members.contains(where: { $0.id == currentUserId }) else {
             throw NSError(
                 domain: "SwiftDataNotesRepository",
                 code: 404,
@@ -145,6 +159,24 @@ final class SwiftDataNotesRepository: NotesRepository {
         }
 
         return note
+    }
+    
+    private func fetchCurrentUserId() throws -> EntityID {
+        let owner = username
+
+        let descriptor = FetchDescriptor<UserEntity>()
+
+        guard let user = try modelContext.fetch(descriptor).first(where: {
+            Self.normalize($0.username) == owner
+        }) else {
+            throw NSError(
+                domain: "SwiftDataNotesRepository",
+                code: 404,
+                userInfo: [NSLocalizedDescriptionKey: "Пользователь не найден"]
+            )
+        }
+
+        return user.id
     }
     
     private static func normalize(_ text: String) -> String {

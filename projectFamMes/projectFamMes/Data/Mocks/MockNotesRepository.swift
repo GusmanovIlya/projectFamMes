@@ -11,7 +11,7 @@ actor MockNotesRepository: NotesRepository {
     }
     
     private var sharedKey: String {
-        "shared_notes_global"
+        "shared_notes_\(normalizedUsername)"
     }
 
     private var normalizedUsername: String {
@@ -27,7 +27,7 @@ actor MockNotesRepository: NotesRepository {
         self.username = username
 
         let hasInitializedKey = "notes_initialized_\(normalizedUsername)"
-        let hasInitializedSharedKey = "shared_notes_global_initialized"
+        let hasInitializedSharedKey = "shared_notes_initialized_\(normalizedUsername)"
 
         let hasInitialized = UserDefaults.standard.bool(forKey: hasInitializedKey)
         let hasInitializedShared = UserDefaults.standard.bool(forKey: hasInitializedSharedKey)
