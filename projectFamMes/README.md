@@ -122,4 +122,4 @@ xcodebuild test \
 
 | Аккаунт |
 | --- |
-| <img src="docs/screenshots/account.png" width="220" alt="Экран аккаунта"> |
+| <img src="propoganda viperr.png" width="220" alt="Экран аккаунта"> |
