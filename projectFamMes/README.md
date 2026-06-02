@@ -114,12 +114,12 @@ xcodebuild test \
 
 | Вход | Регистрация | Чаты |
 | --- | --- | --- |
-| <img src="../docs/screenshots/login.png" width="220" alt="Экран входа"> | <img src="../docs/screenshots/register.png" width="220" alt="Экран регистрации"> | <img src="../docs/screenshots/chats.png" width="220" alt="Список чатов"> |
+| <img src="projectFamMes/photo_2025-09-20%2003.05.04.jpeg.xcassets/login.imageset/login.png" width="220" alt="Экран входа"> | <img src="projectFamMes/photo_2025-09-20%2003.05.04.jpeg.xcassets/register.imageset/register.png" width="220" alt="Экран регистрации"> | <img src="projectFamMes/photo_2025-09-20%2003.05.04.jpeg.xcassets/chats.imageset/chats.png" width="220" alt="Список чатов"> |
 
 | Переписка | Заметки | Редактирование общей заметки |
 | --- | --- | --- |
-| <img src="../docs/screenshots/chat.png" width="220" alt="Экран переписки"> | <img src="../docs/screenshots/notes.png" width="220" alt="Список заметок"> | <img src="../docs/screenshots/shared-note-edit.png" width="220" alt="Редактирование общей заметки"> |
+| <img src="projectFamMes/photo_2025-09-20%2003.05.04.jpeg.xcassets/chat.imageset/chat.png" width="220" alt="Экран переписки"> | <img src="projectFamMes/photo_2025-09-20%2003.05.04.jpeg.xcassets/notes.imageset/notes.png" width="220" alt="Список заметок"> | <img src="projectFamMes/photo_2025-09-20%2003.05.04.jpeg.xcassets/shared-note-edit.imageset/shared-note-edit.png" width="220" alt="Редактирование общей заметки"> |
 
 | Аккаунт |
 | --- |
-| <img src="../docs/screenshots/account.png" width="220" alt="Экран аккаунта"> |
+| <img src="projectFamMes/photo_2025-09-20%2003.05.04.jpeg.xcassets/account.imageset/account.png" width="220" alt="Экран аккаунта"> |
