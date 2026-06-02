@@ -114,12 +114,12 @@ xcodebuild test \
 
 | Вход | Регистрация | Чаты |
 | --- | --- | --- |
-| <img src="docs/screenshots/login.png" width="220" alt="Экран входа"> | <img src="docs/screenshots/register.png" width="220" alt="Экран регистрации"> | <img src="docs/screenshots/chats.png" width="220" alt="Список чатов"> |
+| <img src="../docs/screenshots/login.png" width="220" alt="Экран входа"> | <img src="../docs/screenshots/register.png" width="220" alt="Экран регистрации"> | <img src="../docs/screenshots/chats.png" width="220" alt="Список чатов"> |
 
 | Переписка | Заметки | Редактирование общей заметки |
 | --- | --- | --- |
-| <img src="docs/screenshots/chat.png" width="220" alt="Экран переписки"> | <img src="docs/screenshots/notes.png" width="220" alt="Список заметок"> | <img src="docs/screenshots/shared-note-edit.png" width="220" alt="Редактирование общей заметки"> |
+| <img src="../docs/screenshots/chat.png" width="220" alt="Экран переписки"> | <img src="../docs/screenshots/notes.png" width="220" alt="Список заметок"> | <img src="../docs/screenshots/shared-note-edit.png" width="220" alt="Редактирование общей заметки"> |
 
 | Аккаунт |
 | --- |
-| <img src="propoganda viperr.png" width="220" alt="Экран аккаунта"> |
+| <img src="../docs/screenshots/account.png" width="220" alt="Экран аккаунта"> |
