@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		E5F6335F2FCE3E830005DAD7 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = E5F6335E2FCE3E830005DAD7 /* Kingfisher */; };
+		E5F633702FCE7BFF0005DAD7 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = E5F6336F2FCE7BFF0005DAD7 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,6 +24,7 @@
 /* Begin PBXFileReference section */
 		E5B61E3B2F71DB5A00FD2B75 /* projectFamMes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = projectFamMes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E5F633642FCE789D0005DAD7 /* projectFamMesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = projectFamMesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E5F6336F2FCE7BFF0005DAD7 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -60,6 +62,7 @@
 		E5B61E322F71DB5A00FD2B75 = {
 			isa = PBXGroup;
 			children = (
+				E5F6336F2FCE7BFF0005DAD7 /* README.md */,
 				E5B61E3D2F71DB5A00FD2B75 /* projectFamMes */,
 				E5F633652FCE789D0005DAD7 /* projectFamMesTests */,
 				E5B61E3C2F71DB5A00FD2B75 /* Products */,
@@ -171,6 +174,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E5F633702FCE7BFF0005DAD7 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
