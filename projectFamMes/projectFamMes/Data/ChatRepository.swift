@@ -8,7 +8,6 @@ protocol ChatRepository {
     func receiveMessage(roomId: EntityID, senderId: EntityID, text: String) async throws -> Message
 
     func fetchAllUsers() async throws -> [UserSummary]
-    func searchAllUsers(byUsername query: String) async throws -> [UserSummary]
 
     func fetchKnownUsers() async throws -> [UserSummary]
 }

@@ -55,14 +55,6 @@ final class NotesViewModel {
 //
 //        state = .error("Тестовая ошибка загрузки данных")
 //    }
-    
-    func loadPersonalNotes() async {
-        await reloadAll()
-    }
-
-    func loadSharedNotes() async {
-        await reloadAll()
-    }
 
     func sharedNote(for roomId: EntityID) -> SharedNote? {
         sharedNotes.first(where: { $0.roomId == roomId })

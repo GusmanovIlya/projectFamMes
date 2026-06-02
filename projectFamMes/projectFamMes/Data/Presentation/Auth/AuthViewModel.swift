@@ -79,14 +79,6 @@ final class AuthViewModel {
         loadCurrentUser()
     }
 
-    var isLoggedIn: Bool {
-        currentUser != nil
-    }
-
-    var demoUsers: [User] {
-        mockUsers
-    }
-
     func login(username: String, password: String) -> Bool {
         let normalizedUsername = normalize(username)
 
@@ -141,10 +133,6 @@ final class AuthViewModel {
         saveSession(for: newUser)
 
         return true
-    }
-
-    func register(username: String, password: String) -> Bool {
-        register(name: username, username: username, password: password)
     }
 
     func updateBio(_ bio: String) {
