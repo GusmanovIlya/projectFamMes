@@ -51,7 +51,7 @@ private struct MainAppView: View {
                         }
 
                     NavigationStack {
-                        AccountView()
+                        AccountView(tipService: MockFamilyTipService())
                     }
                     .tabItem {
                         Label("Аккаунт", systemImage: "person.circle")
@@ -72,7 +72,7 @@ private struct MainAppView: View {
                 currentUsername: user.username
             )
 
-            let notesVM = NotesViewModel(repository: notesRepository)
+            let notesVM = NotesViewModel(storage: notesRepository)
             await notesVM.reloadAll()
 
             self.notesVM = notesVM

@@ -54,6 +54,7 @@ final class UserEntity {
             id: id,
             name: name,
             username: username,
+            avatarName: avatarName,
             avatarURL: avatarURLString.flatMap(URL.init(string:))
         )
     }

@@ -13,9 +13,7 @@ struct NotesHomeView: View {
     var body: some View {
         NavigationStack {
             List {
-                personalSection
-                sharedSection
-                emptySection
+                content
             }
             .listStyle(.plain)
             .navigationTitle("Заметки")
@@ -56,8 +54,36 @@ struct NotesHomeView: View {
             }
         }
         .task {
-            await vm.loadPersonalNotes()
-            await vm.loadSharedNotes()
+            await vm.reloadAll()
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch vm.state {
+        case .loading:
+            HStack {
+                Spacer()
+                ProgressView("Загрузка заметок...")
+                Spacer()
+            }
+            .padding(.vertical, 40)
+            .listRowSeparator(.hidden)
+
+        case .empty:
+            emptySection
+
+        case .content:
+            personalSection
+            sharedSection
+
+        case .error(let message):
+            ErrorStateView(message: message) {
+                Task {
+                    await vm.reloadAll()
+                }
+            }
+            .listRowSeparator(.hidden)
         }
     }
 
@@ -85,14 +111,12 @@ struct NotesHomeView: View {
 
     @ViewBuilder
     private var emptySection: some View {
-        if vm.personalNotes.isEmpty && vm.sharedNotes.isEmpty {
-            ContentUnavailableView(
-                "Нет заметок",
-                systemImage: "note.text",
-                description: Text("Создай первую личную или общую заметку")
-            )
-            .listRowSeparator(.hidden)
-        }
+        ContentUnavailableView(
+            "Нет заметок",
+            systemImage: "note.text",
+            description: Text("Создай первую личную или общую заметку")
+        )
+        .listRowSeparator(.hidden)
     }
 
     private func personalRow(_ note: PersonalNote) -> some View {
@@ -197,5 +221,32 @@ struct NoteCardView: View {
         .padding(12)
         .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 14))
+    }
+}
+
+struct ErrorStateView: View {
+    let message: String
+    let retryAction: () -> Void
+
+    var body: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.largeTitle)
+                .foregroundStyle(.orange)
+
+            Text("Не удалось загрузить данные")
+                .font(.headline)
+
+            Text(message)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+
+            Button("Повторить", action: retryAction)
+                .buttonStyle(.borderedProminent)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 40)
+        .padding(.horizontal, 16)
     }
 }

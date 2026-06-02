@@ -267,6 +267,68 @@ final class SwiftDataChatRepository: ChatRepository {
                 time: "10:05",
                 updatedAt: .now.addingTimeInterval(-5400)
             )
+            
+            insertChat(
+                id: "room_killbill",
+                avatar: "avatar7",
+                name: "killbill",
+                username: "killbill",
+                lastMessage: "Посмотрю дизайн формы входа",
+                time: "10:05",
+                updatedAt: .now.addingTimeInterval(-5400)
+            )
+            
+            insertChat(
+                id: "room_Steven",
+                avatar: "avatar6",
+                name: "Steven",
+                username: "Steven",
+                lastMessage: "Посмотрю дизайн формы входа",
+                time: "10:05",
+                updatedAt: .now.addingTimeInterval(-5400)
+            )
+            
+            insertChat(
+                id: "room_kaiangel",
+                avatar: "avatar6",
+                name: "kaiangel",
+                username: "kaiangel",
+                lastMessage: "Посмотрю дизайн формы входа",
+                time: "10:05",
+                updatedAt: .now.addingTimeInterval(-5400)
+            )
+            
+            
+            
+            insertChat(
+                id: "room_9mice",
+                avatar: "avatar8",
+                name: "9mice",
+                username: "9mice",
+                lastMessage: "Посмотрю дизайн формы входа",
+                time: "10:05",
+                updatedAt: .now.addingTimeInterval(-5400)
+            )
+            
+            insertChat(
+                id: "room_pharaoh",
+                avatar: "avatar9",
+                name: "pharaoh",
+                username: "pharaoh",
+                lastMessage: "Посмотрю дизайн формы входа",
+                time: "10:05",
+                updatedAt: .now.addingTimeInterval(-5400)
+            )
+            
+            insertChat(
+                id: "room_trappa",
+                avatar: "avatar10",
+                name: "trappa",
+                username: "trappa",
+                lastMessage: "Посмотрю дизайн формы входа",
+                time: "10:05",
+                updatedAt: .now.addingTimeInterval(-5400)
+            )
 
             insertMessage(
                 roomId: "room_gusmanovilya",

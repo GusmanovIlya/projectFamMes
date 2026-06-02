@@ -35,12 +35,14 @@ public struct UserSummary: Identifiable, Codable, Hashable, Sendable {
     public let id: EntityID
     public var name: String
     public var username: String
+    public var avatarName: String = "avatar4"
     public var avatarURL: URL?
 
-    public init(id: EntityID, name: String, username: String, avatarURL: URL? = nil) {
+    public init(id: EntityID, name: String, username: String, avatarName: String = "avatar4", avatarURL: URL? = nil) {
         self.id = id
         self.name = name
         self.username = username
+        self.avatarName = avatarName
         self.avatarURL = avatarURL
     }
 }

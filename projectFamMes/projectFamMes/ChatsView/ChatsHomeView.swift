@@ -138,7 +138,7 @@ struct FoundUserRowView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image("avatar4")
+            Image(user.avatarName)
                 .resizable()
                 .scaledToFill()
                 .frame(width: 58, height: 58)

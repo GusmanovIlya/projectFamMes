@@ -23,10 +23,6 @@ struct LoginView: View {
                     mainButton
                     modeSwitcher
 
-                    if !isRegisterMode {
-                        demoAccounts
-                    }
-
                     Spacer(minLength: 32)
                 }
                 .padding()
@@ -125,46 +121,7 @@ struct LoginView: View {
         }
     }
 
-    private var demoAccounts: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Демо-аккаунты")
-                .font(.headline)
-
-            ForEach(authViewModel.demoUsers) { user in
-                Button {
-                    username = user.username
-                    password = user.password
-                    errorMessage = ""
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(user.avatarName)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 42, height: 42)
-                            .clipShape(Circle())
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(user.name)
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(.primary)
-
-                            Text("@\(user.username) / пароль: \(user.password)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-
-                        Spacer()
-                    }
-                    .padding(12)
-                    .background(.background)
-                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .padding(.top, 8)
-    }
+    
 
     private func handleAuth() {
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)

@@ -30,6 +30,14 @@ final class AuthViewModel {
     ]
 
     private let extraUsers: [User] = [
+            User(id: "user_arina", name: "Арина", username: "kaiangel", password: "1234", avatarName: "avatar6", bio: "Участник FamMes"),
+            User(id: "user_roman", name: "Роман", username: "pharaoh", password: "1234", avatarName: "avatar9", bio: "Участник FamMes"),
+            User(id: "user_sofia", name: "София", username: "9mice", password: "1234", avatarName: "avatar10", bio: "Участник FamMes"),
+            User(id: "user_timur", name: "Тимур", username: "trappa", password: "1234", avatarName: "avatar7", bio: "Участник FamMes"),
+            User(id: "user_lera", name: "Лера", username: "explorer", password: "1234", avatarName: "avatar8", bio: "Участник FamMes"),
+            User(id: "user_as", name: "Лера", username: "face", password: "1234", avatarName: "avatar11", bio: "Участник FamMes"),
+            User(id: "user_ds", name: "Лера", username: "heroin", password: "1234", avatarName: "avatar12", bio: "Участник FamMes"),
+            User(id: "user_qw", name: "Лера", username: "based", password: "1234", avatarName: "avatar13", bio: "Участник FamMes"),
         User(
             id: "user_alexey",
             name: "Алексей",
