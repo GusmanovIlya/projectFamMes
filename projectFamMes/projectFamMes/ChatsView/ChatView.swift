@@ -48,8 +48,10 @@ struct ChatView: View {
                     .clipShape(Circle())
             }
         }
-        .task {
-            await vm.load()
+        .onAppear {
+            Task {
+                await vm.load()
+            }
         }
     }
 
